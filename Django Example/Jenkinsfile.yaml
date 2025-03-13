@@ -1,0 +1,47 @@
+pipeline:
+  agent: any
+
+  environment:
+    PROJECT_DIR: "Django Example"
+    VENV_DIR: "venv"
+
+  stages:
+    - stage: Checkout Code
+      steps:
+        - script: |
+            rm -rf ${PROJECT_DIR}/${VENV_DIR}
+            git clone https://github.com/vasantibendre06/POC2-Python-Web-App.git project
+            cd project/Django\ Example
+
+    - stage: Setup Python Environment
+      steps:
+        - script: |
+            cd project/Django\ Example
+            python3 -m venv ${VENV_DIR}
+            source ${VENV_DIR}/bin/activate
+            pip install --upgrade pip
+            pip install -r requirements.txt
+
+    - stage: Run Tests
+      steps:
+        - script: |
+            cd project/Django\ Example
+            source ${VENV_DIR}/bin/activate
+            python manage.py test
+
+    - stage: Deploy Django App
+      steps:
+        - script: |
+            cd project/Django\ Example
+            source ${VENV_DIR}/bin/activate
+            python manage.py migrate
+            python manage.py collectstatic --noinput
+            nohup python manage.py runserver 0.0.0.0:8000 &
+
+  post:
+    always:
+      - echo "Pipeline execution completed."
+    success:
+      - echo "Build and Deployment Successful!"
+    failure:
+      - echo "Build or Deployment Failed."
