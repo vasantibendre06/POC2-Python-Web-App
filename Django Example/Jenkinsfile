@@ -13,7 +13,6 @@ pipeline {
                     sh """
                         rm -rf ${PROJECT_DIR}/${VENV_DIR}
                         git clone https://github.com/vasantibendre06/POC2-Python-Web-App.git project
-                        cd project/Django\\ Example
                     """
                 }
             }
